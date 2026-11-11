@@ -6,15 +6,23 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Ball { 
-    public Sprite sprite;
-    private Vector2 vel = new Vector2(400, 200);
-    private Rectangle r;
+    public final Sprite sprite;
+    private final Vector2 vel;
+    private final Rectangle r;
+    private int bounceCount; 
+    private final int bounceLimit;
     
-    public Ball(Rectangle r, Texture ballTexture) {
+    public boolean shouldRemove = false;
+    
+    public Ball(Texture textura, float x, float y, float vx, float vy, Rectangle r	) {
         super();
         this.r = r;
-        this.sprite = new Sprite(ballTexture);
-        sprite.setSize(64, 64);
+        sprite = new Sprite(textura);
+        sprite.setSize(32, 32);
+        sprite.setCenter(x, y);
+        vel = new Vector2(vx, vy);
+        this.bounceCount = 0;
+        this.bounceLimit = 2;
     }
     
     public void compute(float delta) {
@@ -22,23 +30,30 @@ public class Ball {
         this.ballBounce();
     }
     
-    
     private void ballBounce() {
-        if(sprite.getX() + sprite.getWidth() >= r.width) {
-            vel.scl(-1, 1);
-            sprite.setX(r.width - sprite.getWidth());
+        // Colisão no Eixo X
+        if (sprite.getX() + sprite.getWidth() >= r.width) {
+            handleBounce(-1, 1, r.width - sprite.getWidth(), sprite.getY());
+        } else if (sprite.getX() < r.x) {
+            handleBounce(-1, 1, r.x, sprite.getY());
         }
-        if(sprite.getX() < r.x) {
-            vel.scl(-1, 1);
-            sprite.setX(r.x);
+        
+        // Colisão no Eixo Y
+        if (sprite.getY() + sprite.getHeight() >= r.height) {
+            handleBounce(1, -1, sprite.getX(), r.height - sprite.getHeight());
+        } else if (sprite.getY() < r.y) {
+            handleBounce(1, -1, sprite.getX(), r.y);
         }
-        if(sprite.getY() + sprite.getHeight() >= r.height) {
-            vel.scl(1, -1);
-            sprite.setY(r.height - sprite.getHeight());
-        }
-        if(sprite.getY() < r.y) {
-            vel.scl(1, -1);
-            sprite.setY(r.y);
+    }
+    
+    private void handleBounce(float scaleX, float scaleY, float targetX, float targetY) {
+        vel.scl(scaleX, scaleY);
+        sprite.setPosition(targetX, targetY);
+        this.bounceCount++;
+        
+        // Verifica logo após quicar se atingiu o limite
+        if (this.bounceCount >= this.bounceLimit) {
+            this.shouldRemove = true;
         }
     }
 }
