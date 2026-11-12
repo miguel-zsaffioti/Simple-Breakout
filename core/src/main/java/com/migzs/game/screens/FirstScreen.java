@@ -44,7 +44,7 @@ public class FirstScreen implements Screen {
         mousePos.set(Gdx.input.getX(), Gdx.input.getY());
         cannon.compute(delta, main.viewport.unproject(mousePos));
 
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && cannon.podeAtirar()) {
             balls.add(cannon.disparar(ballTexture));
         }
 

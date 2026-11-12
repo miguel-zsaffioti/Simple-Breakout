@@ -14,7 +14,9 @@ public class Cannon {
 
     private static final float COMPRIMENTO = 90f;
     private static final float VELOCIDADE = 450f;
+    private static final float COOLDOWN = 0.3f;
     private final Vector2 dir = new Vector2(0, 1);
+    private float cooldownRestante = 0f;
 
     public Cannon(Texture texture, Rectangle screenBounds) {
         this.bounds = screenBounds;
@@ -34,12 +36,19 @@ public class Cannon {
     }
 
     public void compute(float delta, Vector2 mousePos) {
+        cooldownRestante = Math.max(0f, cooldownRestante - delta);
+
         float angle = mousePos.cpy().sub(worldPivot).angleDeg();
         dir.set(mousePos).sub(worldPivot).nor();
         sprite.setRotation(angle - 90);
     }
 
+    public boolean podeAtirar() {
+        return cooldownRestante <= 0f;
+    }
+
     public Ball disparar(Texture textura) {
+        cooldownRestante = COOLDOWN;
         float x = worldPivot.x + dir.x * COMPRIMENTO;
         float y = worldPivot.y + dir.y * COMPRIMENTO;
         return new Ball(textura, x, y, dir.x * VELOCIDADE, dir.y * VELOCIDADE, bounds);
