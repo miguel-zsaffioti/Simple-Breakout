@@ -23,6 +23,7 @@ public class FirstScreen implements Screen {
     private static final float MARGEM_X = 20f;
     private static final float MARGEM_TOPO = 60f;
     private static final int VIDA_INICIAL = 3;
+    private static final int VIDA_POR_LINHA = 2;
 
     private Main main;
     private Rectangle r;
@@ -61,6 +62,11 @@ public class FirstScreen implements Screen {
         buildBlocks();
     }
 
+    private int vidaDaLinha(int linha) {
+        int linhasAcima = blockTextures.size - 1 - linha;
+        return VIDA_INICIAL + linhasAcima * VIDA_POR_LINHA;
+    }
+
     private void buildBlocks() {
         float blocoW = (r.width - 2 * MARGEM_X - (COLUNAS - 1) * GAP) / COLUNAS;
         float startY = r.height - MARGEM_TOPO - BLOCO_H;
@@ -68,10 +74,11 @@ public class FirstScreen implements Screen {
         for (int linha = 0; linha < blockTextures.size; linha++) {
             Texture texture = blockTextures.get(linha);
             float y = startY - linha * (BLOCO_H + GAP);
+            int vida = vidaDaLinha(linha);
 
             for (int coluna = 0; coluna < COLUNAS; coluna++) {
                 float x = MARGEM_X + coluna * (blocoW + GAP);
-                blocks.add(new Block(texture, x, y, blocoW, BLOCO_H, VIDA_INICIAL));
+                blocks.add(new Block(texture, x, y, blocoW, BLOCO_H, vida));
             }
         }
     }
