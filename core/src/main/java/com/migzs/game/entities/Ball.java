@@ -62,11 +62,13 @@ public class Ball {
             return;
         }
 
+        float right = r.x + r.width;
+        float top = r.y + r.height;
         boolean bounced = false;
 
-        if (sprite.getX() + sprite.getWidth() >= r.width) {
+        if (sprite.getX() + sprite.getWidth() >= right) {
             vel.x = -Math.abs(vel.x);
-            sprite.setX(r.width - sprite.getWidth());
+            sprite.setX(right - sprite.getWidth());
             bounced = true;
         } else if (sprite.getX() < r.x) {
             vel.x = Math.abs(vel.x);
@@ -74,9 +76,9 @@ public class Ball {
             bounced = true;
         }
 
-        if (sprite.getY() + sprite.getHeight() >= r.height) {
+        if (sprite.getY() + sprite.getHeight() >= top) {
             vel.y = -Math.abs(vel.y);
-            sprite.setY(r.height - sprite.getHeight());
+            sprite.setY(top - sprite.getHeight());
             bounced = true;
         }
 

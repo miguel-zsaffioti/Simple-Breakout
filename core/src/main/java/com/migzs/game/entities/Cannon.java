@@ -23,13 +23,13 @@ public class Cannon {
     private final Vector2 aim = new Vector2();
     private float cooldownRestante = 0f;
 
-    public Cannon(Texture texture, Rectangle screenBounds) {
-        this.bounds = screenBounds;
+    public Cannon(Texture texture, Rectangle playArea) {
+        this.bounds = playArea;
         this.sprite = new Sprite(texture);
         this.sprite.setSize(128, 128);
 
-        float x = (screenBounds.width / 2f) - (sprite.getWidth() / 2f);
-        float y = 0;
+        float x = playArea.x + (playArea.width / 2f) - (sprite.getWidth() / 2f);
+        float y = playArea.y;
 
         this.pos = new Vector2(x, y);
         this.sprite.setPosition(pos.x, pos.y);
