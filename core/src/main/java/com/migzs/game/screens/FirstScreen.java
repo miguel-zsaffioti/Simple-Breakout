@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -23,6 +24,7 @@ public class FirstScreen implements Screen {
 
     private Texture blockTexture;
     private Array<Block> blocks = new Array<Block>(false, 64);
+    private BitmapFont font;
 
     private Cannon cannon;
     private Texture cannonTexture;
@@ -34,10 +36,13 @@ public class FirstScreen implements Screen {
         r = new Rectangle(0, 0, main.viewport.getWorldWidth(), main.viewport.getWorldHeight());
         mousePos = new Vector2();
 
-        ballTexture = new Texture(Gdx.files.internal("Bola.png"));
-        blockTexture = new Texture(Gdx.files.internal("Blocos/Bloco_1.png"));
+        ballTexture = new Texture(Gdx.files.internal("Bola.PNG"));
+        blockTexture = new Texture(Gdx.files.internal("Blocos/Bloco_1.PNG"));
 
-        cannonTexture = new Texture(Gdx.files.internal("Canhao.png"));
+        font = new BitmapFont();
+        font.getData().setScale(1.5f);
+
+        cannonTexture = new Texture(Gdx.files.internal("Canhao.PNG"));
         cannon = new Cannon(cannonTexture, r);
 
         blocks.add(new Block(blockTexture, 350, 350, 100, 40, 3));
@@ -84,7 +89,7 @@ public class FirstScreen implements Screen {
         main.batch.begin();
         cannon.sprite.draw(main.batch);
         for (int i = 0, n = blocks.size; i < n; i++) {
-            blocks.get(i).sprite.draw(main.batch);
+            blocks.get(i).draw(main.batch, font);
         }
         for (int i = 0, n = balls.size; i < n; i++) {
             balls.get(i).sprite.draw(main.batch);
@@ -120,5 +125,6 @@ public class FirstScreen implements Screen {
         ballTexture.dispose();
         blockTexture.dispose();
         cannonTexture.dispose();
+        font.dispose();
     }
 }
