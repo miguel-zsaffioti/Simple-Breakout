@@ -9,8 +9,8 @@ import com.migzs.game.screens.FirstScreen;
 
 public class Main extends Game {
 
-    public static final int WIDTH = 800;
-    public static final int HEIGHT = 480;
+    public static final int WIDTH = 600;
+    public static final int HEIGHT = 900;
 
     public Viewport viewport;
     public OrthographicCamera camera;

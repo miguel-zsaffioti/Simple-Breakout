@@ -15,6 +15,13 @@ import com.migzs.game.entities.Block;
 import com.migzs.game.entities.Cannon;
 
 public class FirstScreen implements Screen {
+    private static final int COLUNAS = 4;
+    private static final float BLOCO_H = 44f;
+    private static final float GAP = 10f;
+    private static final float MARGEM_X = 20f;
+    private static final float MARGEM_TOPO = 60f;
+    private static final int VIDA_INICIAL = 3;
+
     private Main main;
     private Rectangle r;
     private Vector2 mousePos;
@@ -22,7 +29,7 @@ public class FirstScreen implements Screen {
     private Texture ballTexture;
     private Array<Ball> balls = new Array<Ball>(false, 10);
 
-    private Texture blockTexture;
+    private Array<Texture> blockTextures = new Array<Texture>(false, 5);
     private Array<Block> blocks = new Array<Block>(false, 64);
     private BitmapFont font;
 
@@ -37,7 +44,11 @@ public class FirstScreen implements Screen {
         mousePos = new Vector2();
 
         ballTexture = new Texture(Gdx.files.internal("Bola.PNG"));
-        blockTexture = new Texture(Gdx.files.internal("Blocos/Bloco_1.PNG"));
+        blockTextures.add(new Texture(Gdx.files.internal("Blocos/Bloco_1.PNG")));
+        blockTextures.add(new Texture(Gdx.files.internal("Blocos/Bloco_2.PNG")));
+        blockTextures.add(new Texture(Gdx.files.internal("Blocos/Bloco_3.PNG")));
+        blockTextures.add(new Texture(Gdx.files.internal("Blocos/Bloco_4.PNG")));
+        blockTextures.add(new Texture(Gdx.files.internal("Blocos/Bloco_5.PNG")));
 
         font = new BitmapFont();
         font.getData().setScale(1.5f);
@@ -45,7 +56,22 @@ public class FirstScreen implements Screen {
         cannonTexture = new Texture(Gdx.files.internal("Canhao.PNG"));
         cannon = new Cannon(cannonTexture, r);
 
-        blocks.add(new Block(blockTexture, 350, 350, 100, 40, 3));
+        buildBlocks();
+    }
+
+    private void buildBlocks() {
+        float blocoW = (r.width - 2 * MARGEM_X - (COLUNAS - 1) * GAP) / COLUNAS;
+        float startY = r.height - MARGEM_TOPO - BLOCO_H;
+
+        for (int linha = 0; linha < blockTextures.size; linha++) {
+            Texture texture = blockTextures.get(linha);
+            float y = startY - linha * (BLOCO_H + GAP);
+
+            for (int coluna = 0; coluna < COLUNAS; coluna++) {
+                float x = MARGEM_X + coluna * (blocoW + GAP);
+                blocks.add(new Block(texture, x, y, blocoW, BLOCO_H, VIDA_INICIAL));
+            }
+        }
     }
 
     @Override
@@ -123,8 +149,8 @@ public class FirstScreen implements Screen {
     @Override
     public void dispose() {
         ballTexture.dispose();
-        blockTexture.dispose();
+        blockTextures.forEach(texture -> texture.dispose());
         cannonTexture.dispose();
         font.dispose();
     }
-}
+}	
