@@ -5,16 +5,19 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-public class Ball { 
+public class Ball {
     public final Sprite sprite;
     private final Vector2 vel;
     private final Rectangle r;
-    private int bounceCount; 
+    private final Rectangle hitbox = new Rectangle();
+    private int bounceCount;
     private final int bounceLimit;
-    
+
+    private static final int DAMAGE = 1;
+
     public boolean shouldRemove = false;
-    
-    public Ball(Texture textura, float x, float y, float vx, float vy, Rectangle r	) {
+
+    public Ball(Texture textura, float x, float y, float vx, float vy, Rectangle r) {
         super();
         this.r = r;
         sprite = new Sprite(textura);
@@ -24,34 +27,54 @@ public class Ball {
         this.bounceCount = 0;
         this.bounceLimit = 2;
     }
-    
+
     public void compute(float delta) {
         sprite.setPosition(sprite.getX() + vel.x * delta, sprite.getY() + vel.y * delta);
         this.ballBounce();
     }
-    
+
+    public boolean hitBlock(Block block) {
+        hitbox.set(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
+        Rectangle b = block.getBounds();
+
+        if (!hitbox.overlaps(b)) return false;
+
+        float overlapX = Math.min(hitbox.x + hitbox.width, b.x + b.width) - Math.max(hitbox.x, b.x);
+        float overlapY = Math.min(hitbox.y + hitbox.height, b.y + b.height) - Math.max(hitbox.y, b.y);
+
+        if (overlapX < overlapY) {
+            float side = (hitbox.x + hitbox.width / 2f) < (b.x + b.width / 2f) ? -1f : 1f;
+            sprite.translateX(side * overlapX);
+            vel.x = side * Math.abs(vel.x);
+        } else {
+            float side = (hitbox.y + hitbox.height / 2f) < (b.y + b.height / 2f) ? -1f : 1f;
+            sprite.translateY(side * overlapY);
+            vel.y = side * Math.abs(vel.y);
+        }
+
+        block.hit(DAMAGE);
+        return true;
+    }
+
     private void ballBounce() {
-        // Colisão no Eixo X
         if (sprite.getX() + sprite.getWidth() >= r.width) {
             handleBounce(-1, 1, r.width - sprite.getWidth(), sprite.getY());
         } else if (sprite.getX() < r.x) {
             handleBounce(-1, 1, r.x, sprite.getY());
         }
-        
-        // Colisão no Eixo Y
+
         if (sprite.getY() + sprite.getHeight() >= r.height) {
             handleBounce(1, -1, sprite.getX(), r.height - sprite.getHeight());
         } else if (sprite.getY() < r.y) {
             handleBounce(1, -1, sprite.getX(), r.y);
         }
     }
-    
+
     private void handleBounce(float scaleX, float scaleY, float targetX, float targetY) {
         vel.scl(scaleX, scaleY);
         sprite.setPosition(targetX, targetY);
         this.bounceCount++;
-        
-        // Verifica logo após quicar se atingiu o limite
+
         if (this.bounceCount >= this.bounceLimit) {
             this.shouldRemove = true;
         }

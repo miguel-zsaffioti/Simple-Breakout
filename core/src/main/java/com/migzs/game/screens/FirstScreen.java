@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.migzs.game.Main;
 import com.migzs.game.entities.Ball;
+import com.migzs.game.entities.Block;
 import com.migzs.game.entities.Cannon;
 
 public class FirstScreen implements Screen {
@@ -19,6 +20,9 @@ public class FirstScreen implements Screen {
 
     private Texture ballTexture;
     private Array<Ball> balls = new Array<Ball>(false, 10);
+
+    private Texture blockTexture;
+    private Array<Block> blocks = new Array<Block>(false, 64);
 
     private Cannon cannon;
     private Texture cannonTexture;
@@ -31,9 +35,12 @@ public class FirstScreen implements Screen {
         mousePos = new Vector2();
 
         ballTexture = new Texture(Gdx.files.internal("Bola.png"));
+        blockTexture = new Texture(Gdx.files.internal("Blocos/Bloco_1.png"));
 
         cannonTexture = new Texture(Gdx.files.internal("Canhao.png"));
         cannon = new Cannon(cannonTexture, r);
+
+        blocks.add(new Block(blockTexture, 350, 350, 100, 40, 3));
     }
 
     @Override
@@ -52,8 +59,20 @@ public class FirstScreen implements Screen {
             Ball ball = balls.get(i);
             ball.compute(delta);
 
+            for (int j = 0; j < blocks.size; j++) {
+                Block block = blocks.get(j);
+                if (block.shouldRemove) continue;
+                if (ball.hitBlock(block)) break;
+            }
+
             if (ball.shouldRemove) {
                 balls.removeIndex(i);
+            }
+        }
+
+        for (int j = blocks.size - 1; j >= 0; j--) {
+            if (blocks.get(j).shouldRemove) {
+                blocks.removeIndex(j);
             }
         }
     }
@@ -64,6 +83,9 @@ public class FirstScreen implements Screen {
         main.batch.setProjectionMatrix(main.camera.combined);
         main.batch.begin();
         cannon.sprite.draw(main.batch);
+        for (int i = 0, n = blocks.size; i < n; i++) {
+            blocks.get(i).sprite.draw(main.batch);
+        }
         for (int i = 0, n = balls.size; i < n; i++) {
             balls.get(i).sprite.draw(main.batch);
         }
@@ -96,6 +118,7 @@ public class FirstScreen implements Screen {
     @Override
     public void dispose() {
         ballTexture.dispose();
+        blockTexture.dispose();
         cannonTexture.dispose();
     }
 }
