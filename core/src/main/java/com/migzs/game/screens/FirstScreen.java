@@ -15,6 +15,8 @@ import com.migzs.game.entities.Block;
 import com.migzs.game.entities.Cannon;
 
 public class FirstScreen implements Screen {
+    private static final int MAX_BALLS = 3;
+
     private static final int COLUNAS = 4;
     private static final float BLOCO_H = 44f;
     private static final float GAP = 10f;
@@ -82,7 +84,9 @@ public class FirstScreen implements Screen {
         mousePos.set(Gdx.input.getX(), Gdx.input.getY());
         cannon.compute(delta, main.viewport.unproject(mousePos));
 
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && cannon.podeAtirar()) {
+        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)
+                && cannon.podeAtirar()
+                && balls.size < MAX_BALLS) {
             balls.add(cannon.disparar(ballTexture));
         }
 
@@ -153,4 +157,4 @@ public class FirstScreen implements Screen {
         cannonTexture.dispose();
         font.dispose();
     }
-}	
+}

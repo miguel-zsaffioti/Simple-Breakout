@@ -57,26 +57,34 @@ public class Ball {
     }
 
     private void ballBounce() {
+        if (sprite.getY() < r.y) {
+            shouldRemove = true;
+            return;
+        }
+
+        boolean bounced = false;
+
         if (sprite.getX() + sprite.getWidth() >= r.width) {
-            handleBounce(-1, 1, r.width - sprite.getWidth(), sprite.getY());
+            vel.x = -Math.abs(vel.x);
+            sprite.setX(r.width - sprite.getWidth());
+            bounced = true;
         } else if (sprite.getX() < r.x) {
-            handleBounce(-1, 1, r.x, sprite.getY());
+            vel.x = Math.abs(vel.x);
+            sprite.setX(r.x);
+            bounced = true;
         }
 
         if (sprite.getY() + sprite.getHeight() >= r.height) {
-            handleBounce(1, -1, sprite.getX(), r.height - sprite.getHeight());
-        } else if (sprite.getY() < r.y) {
-            handleBounce(1, -1, sprite.getX(), r.y);
+            vel.y = -Math.abs(vel.y);
+            sprite.setY(r.height - sprite.getHeight());
+            bounced = true;
         }
-    }
 
-    private void handleBounce(float scaleX, float scaleY, float targetX, float targetY) {
-        vel.scl(scaleX, scaleY);
-        sprite.setPosition(targetX, targetY);
-        this.bounceCount++;
-
-        if (this.bounceCount >= this.bounceLimit) {
-            this.shouldRemove = true;
+        if (bounced) {
+            bounceCount++;
+            if (bounceCount >= bounceLimit) {
+                shouldRemove = true;
+            }
         }
     }
 }

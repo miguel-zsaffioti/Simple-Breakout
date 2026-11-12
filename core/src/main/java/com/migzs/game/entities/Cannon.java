@@ -2,6 +2,7 @@ package com.migzs.game.entities;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
@@ -13,9 +14,13 @@ public class Cannon {
     private final Rectangle bounds;
 
     private static final float COMPRIMENTO = 90f;
-    private static final float VELOCIDADE = 450f;
-    private static final float COOLDOWN = 0.3f;
+    private static final float VELOCIDADE = 650f;
+    private static final float COOLDOWN = 0.6f;
+    private static final float ANGULO_MIN = 15f;
+    private static final float ANGULO_MAX = 165f;
+
     private final Vector2 dir = new Vector2(0, 1);
+    private final Vector2 aim = new Vector2();
     private float cooldownRestante = 0f;
 
     public Cannon(Texture texture, Rectangle screenBounds) {
@@ -38,8 +43,15 @@ public class Cannon {
     public void compute(float delta, Vector2 mousePos) {
         cooldownRestante = Math.max(0f, cooldownRestante - delta);
 
-        float angle = mousePos.cpy().sub(worldPivot).angleDeg();
-        dir.set(mousePos).sub(worldPivot).nor();
+        aim.set(mousePos).sub(worldPivot);
+        float angle = aim.angleDeg();
+
+        if (angle > 180f) {
+            angle = angle >= 270f ? ANGULO_MIN : ANGULO_MAX;
+        }
+        angle = MathUtils.clamp(angle, ANGULO_MIN, ANGULO_MAX);
+
+        dir.set(MathUtils.cosDeg(angle), MathUtils.sinDeg(angle));
         sprite.setRotation(angle - 90);
     }
 
